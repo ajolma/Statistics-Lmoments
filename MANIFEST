@@ -6,7 +6,7 @@ typemap
 Makefile.PL
 arrays.c
 arrays.h
-test.pl
+t/00.t
 Lmoments.pm
 Lmoments.xs
 lmoments/Makefile.PL

@@ -1,21 +1,31 @@
 use ExtUtils::MakeMaker;
 use ExtUtils::F77;
 
-# See lib/ExtUtils/MakeMaker.pm for details of how to influence
-# the contents of the Makefile that is written.
 WriteMakefile(
-	      AUTHOR         => 'Ari Jolma (ari.jolma[at]hut.fi)',
+	      AUTHOR         => 'Ari Jolma https://github.com/ajolma',
               BUILD_REQUIRES => {
-                                  ExtUtils::F77 => '0',
+                                  'ExtUtils::F77' => '0',
                                 },
 	      PREREQ_PM      => {
                                 },
 	      NAME	     => 'Statistics::Lmoments',
 	      VERSION_FROM   => 'Lmoments.pm',
-	      LIBS	     => [" -L/usr/lib " . ExtUtils::F77->runtime],
+              ABSTRACT_FROM  => 'Lmoments.pm',
+	      LIBS	     => [" -L/usr/lib " . 'ExtUtils::F77'->runtime],
 	      DEFINE	     => '',
 	      INC	     => '',
-	      MYEXTLIB       => 'lmoments/libclmoments$(LIB_EXT) lmoments/liblmoments$(LIB_EXT) -lc'
+	      MYEXTLIB       => 'lmoments/libclmoments$(LIB_EXT) lmoments/liblmoments$(LIB_EXT) -lc',
+              LICENSE        => 'perl_5',
+              META_MERGE     => {
+                  'meta-spec' => { version => 2 },
+                  resources => {
+                      repository  => {
+                          type => 'git',
+                          web  => 'https://github.com/ajolma/Statistics-Lmoments',
+                          url  => 'https://github.com/ajolma/Statistics-Lmoments.git',
+                      },
+                  },
+              }
 	      );
 
 sub MY::postamble {

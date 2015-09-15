@@ -1,26 +1,8 @@
-# Before `make install' is performed this script should be runnable with
-# `make test'. After `make install' it should work as `perl test.pl'
-
-######################### We start with some black magic to print on failure.
-
-# Change 1..1 below to 1..last_test_to_print .
-# (It may become useful if the test is moved to ./t subdirectory.)
-
-BEGIN { $| = 1; print "1..1\n"; }
-END {print "not ok 1\n" unless $loaded;}
+use strict;
 use Statistics::Lmoments qw(:all);
-$loaded = 1;
-print "ok 1\n";
+use Test::More tests => 42;
 
-######################### End of black magic.
-
-# Insert your test code below (better if it prints "ok 13"
-# (correspondingly "not ok 13") depending on the success of chunk 13
-# of the test code):
-
-$test = 1;
-
-### Basic tests
+# todo: recreate the tests in lmoments
 
 my @x = (81,95,62,118,106,82,70,228,112,125,
 	 120,142,80,83,46,109,61,81,93,97,76,
@@ -34,67 +16,78 @@ while (<DATA>) {
     chomp;
     s/^\s+//;
     my @l = split /\s+/;
-    push @data,[@l];
+    push @data, \@l;
 }
-my $test = 2;
 
 my $xmom;
+
 #for ('lmr','lmu','pwm') {
 for ('lmu') {
     $xmom = &Statistics::Lmoments::sam($_,\@x, 5);
-    mtest(@{$xmom});
+    round2($xmom);
+    my $l = shift @data;
+    #print STDERR "@$xmom\n";
+    ok(is_deeply($xmom, $l), "sam @$xmom, @$l");
 }
 
 foreach (@Statistics::Lmoments::distributions) {
     next if /^KAP/;
+    my $l = shift @data;
+    #print STDERR "$l->[0]\n";
+    ok($_ eq $l->[0], "$_ $l->[0]");
     my $para = &Statistics::Lmoments::pel($_,$xmom);
-    mtest($_);
-    mtest(@{$para});
+    round2($para);
+    $l = shift @data;
+    #print STDERR "@$para\n";
+    ok(is_deeply($para,$l), "$_ @$para, @$l");
     my $x = 100;
     my $F = &Statistics::Lmoments::cdf($_,$x,$para);
-    mtest($F);
+    $F = round2($F);
+    $l = shift @data;
+    #print STDERR "$F\n";
+    ok($F == $l->[0], "cdf $F, $l->[0]");
 }
 
-sub mtest {
-    my $l = unshift @data;
-    my $ok = 1;
-    for (0..$#$l) {
-	$ok = 0 if substr($l->[$_],0,5) ne substr($_[$_],0,5);
+sub round2 {
+    my $list = shift;
+    if (ref $list) {
+        for (@$list) {
+            $_ = sprintf("%.2f", $_);
+        }
+    } else {
+        return sprintf("%.2f", $list);
     }
-    print $ok ? "ok $test\n" : "not ok $test\n";
-    $test++;
 }
 
 __DATA__
-91.953488372093 15.9966777408638 0.193769470404984 0.26067168148317 0.11581803788323
+91.95 16.00 0.19 0.26 0.12
 EXP
-  59.9601328903655 31.9933554817276
-  0.713926272041227
+59.95 32.00
+0.71
 GAM
-  10.2649340788394 8.95802035023783
-  0.646585619709846
+10.26 8.96
+0.65
 GEV
-  78.2533989127234 22.2818760102919 -0.0367630513904581
-  0.681592367311941
+78.31 22.41 -0.03
+0.68
 GLO
-  86.9483822073972 15.0268409700099 -0.193769470404984
-  0.690563042375168
+87.04 15.07 -0.19
+0.69
 GNO
-  86.4294402286626 26.5218727694868 -0.400115615095075
-  0.679213919684008
+86.53 26.60 -0.39
+0.68
 GPA
-  54.3496070856366 50.7927164766959 0.350730688935283
-  0.660280306522962
+54.17 51.43 0.36
+0.66
 GUM
-  78.6323161342588 23.078327647443
-  0.672882896787571
+78.63 23.08
+0.67
 NOR
-  91.953488372093 28.3533730634886
-  0.611715798860428
+91.95 28.36
+0.61
 PE3
-  91.953488372093 29.5931549021284 1.17305970202737
-  0.674774966021191
+91.95 29.55 1.15
+0.67
 WAK
-  37.0296491939387 254.346049562025 6.58181356397096 16.4282664177941 0.23149723658706
-  0.720191568599643
-
+37.43 241.12 6.16 15.73 0.25
+0.72

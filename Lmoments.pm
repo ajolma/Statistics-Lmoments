@@ -5,7 +5,7 @@ use Carp;
 use vars qw($VERSION @ISA @EXPORT %EXPORT_TAGS @EXPORT_OK
 	    @distributions %parameters);
 
-$VERSION = '0.03';
+$VERSION = '0.04';
 
 @distributions = ('EXP',#     Exponential distribution
 		  'GAM',#     Gamma distribution
@@ -55,33 +55,34 @@ Statistics::Lmoments
 
 use Statistics::Lmoments qw(:all);
 
-my @x = (..data here..);
+    my @x = (..data here..);
 
 # data needs to be sorted from smallest to largest
-@x = sort {$a<=>$b} @x;
+
+    @x = sort {$a<=>$b} @x;
 
 # calculate the "unbiased" first 5 L-moments
-$xmom = sam('lmu',\@x, 5);
-    mtest(@{$xmom});
-}
 
-foreach (@distributions) {
-    next if /^KAP/;
-    my $para = pel($_,$xmom);
-# @{$para} is the estimated parameter vector for the specified distribution 
-    mtest($_);
-    mtest(@{$para});
-    my $x = 100;
-    my $F = cdf($_,$x,$para);
-# $F is the value of the cdf at 100 for this distribution
-}
+    $xmom = sam('lmu',\@x, 5);
 
+    foreach (@distributions) {
+        next if /^KAP/;
+        my $para = pel($_,$xmom);
+    #   @$para is now the estimated parameter vector
+    #   for the specified distribution 
+        my $x = 100;
+        my $F = cdf($_,$x,$para);
+    #   $F is now the value of the cdf at 100 for this distribution
+    }
 
 =head1 DESCRIPTION
 
+This module is a thin wrapper around J. R. M. Hosking's FORTRAN library.
 For more information please see lmoments.ps in this distribution.
 
 =head1 METHODS
+
+=head2 sam
 
 =cut
 
@@ -102,6 +103,12 @@ sub sam {
   }
     return $xmom;
 }
+
+=pod
+
+=head2 lmr
+
+=cut
 
 sub lmr {
     my($distr,$para,$n) = @_;
@@ -126,6 +133,12 @@ sub lmr {
   }
     return $xmom;
 }
+
+=pod
+
+=head2 pel
+
+=cut
 
 sub pel {
     my($distr,$xmom) = @_;
@@ -153,6 +166,12 @@ sub pel {
     return $para;
 }
 
+=pod
+
+=head2 cdf
+
+=cut
+
 sub cdf {
     my($distr,$x,$para) = @_;
     croak("unknown distribution: $distr\n") 
@@ -175,6 +194,12 @@ sub cdf {
   }
 }
 
+=pod
+
+=head2 cua
+
+=cut
+
 sub qua {
     my($distr,$F,$para) = @_;
     croak("unknown distribution: $distr\n") 
@@ -196,6 +221,12 @@ sub qua {
       if (/^WAK/i) { return cquawak($F, $para); }
   }
 }
+
+=pod
+
+=head2 analysis
+
+=cut
 
 sub analysis {
     my($distr,$data,$pp_a,%options) = @_;
@@ -228,18 +259,15 @@ sub analysis {
 
 =pod
     
-=head1 BUGS
-
 =head1 AUTHOR
 
-Ari Jolma, ari.jolma@hut.fi
+Ari Jolma L<https://github.com/ajolma>
 
-=head1 SEE ALSO
+=head1 REPOSITORY
 
-perl(1).
+L<https://github.com/ajolma/Statistics-Lmoments>
 
 =cut
 
 1;
 __END__
-
