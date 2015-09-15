@@ -1,13 +1,14 @@
 use ExtUtils::MakeMaker;
-
 use ExtUtils::F77;
 
 # See lib/ExtUtils/MakeMaker.pm for details of how to influence
 # the contents of the Makefile that is written.
 WriteMakefile(
 	      AUTHOR         => 'Ari Jolma (ari.jolma[at]hut.fi)',
+              BUILD_REQUIRES => {
+                                  ExtUtils::F77 => '0',
+                                },
 	      PREREQ_PM      => {
-                                  ExtUtils::F77 => '0', # or a minimum workable version
                                 },
 	      NAME	     => 'Statistics::Lmoments',
 	      VERSION_FROM   => 'Lmoments.pm',
